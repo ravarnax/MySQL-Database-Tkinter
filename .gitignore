@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Log files
+*.log
+
+# Virtual environment
+venv/
+env/
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python environment files
+*.env
+*.venv
+
+# Test coverage reports
+htmlcov/
+coverage.xml
+*.cover
+
+# Pylint/mypy reports
+.mypy_cache/
+.pytest_cache/
+
+
+.gitignore
