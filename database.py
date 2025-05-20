@@ -1,3 +1,4 @@
+
 import pymysql
 
 def initialize_connection():
@@ -66,3 +67,13 @@ def register(cursor, conn, data):
     )""")
  
     conn.commit()
+
+
+def fetch_all_users(cursor):
+    """Return every row from the users table"""
+    cursor.execute(
+        "SELECT id, firstName, lastName, email, gender, age, address FROM users ORDER BY id"
+    )
+    
+    return cursor.fetchall()
+
