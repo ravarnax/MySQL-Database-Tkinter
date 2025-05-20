@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from database import *
 import time
  
@@ -153,8 +154,42 @@ class MainWindow(tk.Frame):
         super().__init__()
         self.master = master
         center_window(600, 400)
+        
+        ############ buttons ############
+        tk.Button(self, text='Show Users', width=12, command=self.open_users_window).pack(pady=10)
+        tk.Button(self, text='Logout', width=12, command=self.logout).pack(pady=10)      
+        
         self.pack()
- 
+    
+    def open_users_window(self):
+        users = fetch_all_users(cursor)
+        
+        win = tk.Toplevel(self.master)
+        win.title("Registered Users")
+        win.resizable(False, False)
+        center_window(700, 300)
+        
+        cols = ("ID", "First Name", "Last Name", "Email", "Gender", "Age", "Address")
+        tree = ttk.Treeview(win, columns=cols, show="headings", height=10)
+        for c in cols:
+            tree.heading(c, text=c)
+            tree.column(c, width=100, anchor='center')
+            
+        #insert rows
+        for row in users:
+            tree.insert("", "end", values=row)
+        
+        # add a vertical scrollbar
+        vsb = ttk.Scrollbar(win, orient="vertical", command=tree.yview)
+        tree.configure(yscrollcommand=vsb.set)
+        vsb.pack(side='right', fill='y')
+        tree.pack(fill='both', expand=True, padx=10, pady=10)       
+    
+    def logout(self):
+            for w in self.winfo_children():
+                w.destroy()
+            self.destroy()
+            WelcomeWindow(self.master)
  
 root = tk.Tk()
 root.eval('tk::PlaceWindow . center')
