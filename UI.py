@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from database import *
 import time
+from tkinter import messagebox
  
 conn, cursor = initialize_connection()
  
@@ -73,6 +74,7 @@ class LoginWindow(tk.Frame):
          
         if login(cursor, data) == True:
             print("successful login")
+            self.master.logged_in_user = data["email"]
             for widget in self.winfo_children(): 
                 widget.destroy()
             self.destroy()
@@ -158,7 +160,8 @@ class MainWindow(tk.Frame):
         ############ buttons ############
         tk.Button(self, text='Show Users', width=12, command=self.open_users_window).pack(pady=10)
         tk.Button(self, text='Logout', width=12, command=self.logout).pack(pady=10)      
-        
+        change_password_button = tk.Button(self, text="Change Password", command=self.open_change_password_window)
+        change_password_button.pack(pady=10)
         self.pack()
     
     def open_users_window(self):
@@ -190,8 +193,58 @@ class MainWindow(tk.Frame):
                 w.destroy()
             self.destroy()
             WelcomeWindow(self.master)
- 
+            
+    def open_change_password_window(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.destroy()
+        ChangedPasswordWindow(self.master)
+        
+
+class ChangedPasswordWindow(tk.Frame):
+    def __init__(self, master):
+        super().__init__()
+        self.master = master
+        self.master.title("Change Password")
+        center_window(300, 200)
+        
+        tk.Label(self, text="Current Password").grid(row=0, column=0, pady=5, sticky='e')
+        self.current_password_entry = tk.Entry(self, show="*")
+        self.current_password_entry.grid(row=0, column=1, pady=5)
+        
+        tk.Label(self, text="New Password").grid(row=1, column=0, pady=5, sticky='e')
+        self.new_password_entry = tk.Entry(self, show="*")
+        self.new_password_entry.grid(row=1, column=1, pady=5)
+        
+        tk.Button(self, text='Update', command=self.update_password).grid(row=2, column=1, pady=10, sticky='e')
+        tk.Button(self, text='Back', command=self.back).grid(row=2, column=0, pady=10, sticky='w')
+        self.pack()
+        
+    
+    def update_password(self):
+        current_password = self.current_password_entry.get()
+        new_password = self.new_password_entry.get()
+        email = self.master.logged_in_user 
+        
+        if validate_current_password(cursor, email, current_password):
+            change_password(cursor, conn, email, new_password)
+            print("Password updated successfully")
+            messagebox.showinfo("Success", "Password updated successfully")
+            self.current_password_entry.delete(0, tk.END)
+            self.new_password_entry.delete(0, tk.END)
+        else:
+            print("Current password is incorrect")
+            messagebox.showerror("Error", "Current password is incorrect.")
+            
+    def back(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.destroy()
+        MainWindow(self.master)
+    
+        
 root = tk.Tk()
+root.logged_in_user = None
 root.eval('tk::PlaceWindow . center')
 WelcomeWindow(root)
 root.mainloop()
