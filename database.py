@@ -77,3 +77,13 @@ def fetch_all_users(cursor):
     
     return cursor.fetchall()
 
+
+def validate_current_password(cursor, email, current_password):
+    cursor.execute(f"SELECT password FROM users WHERE email='{email}'")
+    result = cursor.fetchone()
+    return result and result[0] == current_password
+
+def change_password(cursor, conn, email, new_password):
+    cursor.execute(f"UPDATE users SET password = '{new_password}' WHERE email='{email}'")
+    conn.commit()
+
